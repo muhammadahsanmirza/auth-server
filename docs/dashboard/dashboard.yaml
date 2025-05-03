@@ -1,0 +1,169 @@
+tags:
+  - name: Dashboard
+    description: API endpoints for dashboard access
+
+paths:
+  /dashboard/admin:
+    get:
+      tags:
+        - Dashboard
+      summary: Admin dashboard
+      description: Get admin dashboard data
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Admin dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Admin dashboard data
+                  data:
+                    type: object
+                    properties:
+                      dashboardType:
+                        type: string
+                        example: admin
+                      features:
+                        type: array
+                        items:
+                          type: string
+                        example: ["User Management", "Role Management", "System Configuration", "Audit Logs", "Analytics"]
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /dashboard/manager:
+    get:
+      tags:
+        - Dashboard
+      summary: Manager dashboard
+      description: Get manager dashboard data
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Manager dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Manager dashboard data
+                  data:
+                    type: object
+                    properties:
+                      dashboardType:
+                        type: string
+                        example: manager
+                      features:
+                        type: array
+                        items:
+                          type: string
+                        example: ["Team Management", "Project Overview", "Task Assignment", "Reports"]
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /dashboard/user:
+    get:
+      tags:
+        - Dashboard
+      summary: User dashboard
+      description: Get user dashboard data
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User dashboard data
+                  data:
+                    type: object
+                    properties:
+                      dashboardType:
+                        type: string
+                        example: user
+                      features:
+                        type: array
+                        items:
+                          type: string
+                        example: ["Profile", "Tasks", "Notifications", "Messages"]
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Error message
+        errors:
+          type: object
+          example: null
