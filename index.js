@@ -4,9 +4,18 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { swaggerDocs } = require('./config/swagger');
 const apiResponse = require('./utils/apiResponse');
+const cors = require('cors');
 
 const connectDB = require('./db/db.connection.js');
 const app = express();
+
+const corsOptions = {
+  origin: 'http://localhost:5173',  // Only allow this specific origin
+  methods: 'GET,PUT,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+}
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
