@@ -1,51 +1,52 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const apiResponse = require('../utils/apiResponse');
-const { keycloakAuth } = require('./keycloak.middleware');
 
+/**
+ * Middleware to protect routes that require authentication
+ * Verifies the JWT token from the request
+ */
 const protect = async (req, res, next) => {
   try {
     let token;
-    let authType = 'local';
-    
-    // Check for token in cookies or Authorization header
+
+    // Check for token in cookies first (for browser clients)
     if (req.cookies && req.cookies.accessToken) {
       token = req.cookies.accessToken;
-    }
-    else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    } 
+    // Then check Authorization header (for API clients)
+    else if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
       token = req.headers.authorization.split(' ')[1];
-      
-      // Check if this is a Keycloak token
-      try {
-        const decoded = jwt.decode(token);
-        if (decoded && decoded.iss && decoded.iss.includes('keycloak')) {
-          authType = 'keycloak';
-        }
-      } catch (error) {
-        // If we can't decode the token, assume it's a local token
-      }
     }
 
+    // If no token found, return unauthorized
     if (!token) {
       return apiResponse.unauthorized(res, 'Not authorized, no token provided');
     }
 
-    // Handle based on auth type
-    if (authType === 'keycloak') {
-      return keycloakAuth(req, res, next);
-    }
-    
-    // Local JWT authentication
+    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("+active");
+
+    // Get user from database - explicitly select the active field
+    const user = await User.findById(decoded.id).select('+active');
+    
+    // Check if user exists
     if (!user) {
       return apiResponse.unauthorized(res, 'User not found');
     }
+
+    // Check if user is active
     if (!user.active) {
       return apiResponse.unauthorized(res, 'User account is deactivated');
     }
 
+    // Add user to request object
     req.user = user;
+    
+    // Continue to the next middleware or route handler
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
@@ -58,6 +59,4 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = {
-  protect
-};
+module.exports = { protect };

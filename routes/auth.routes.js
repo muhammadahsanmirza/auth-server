@@ -11,5 +11,6 @@ router.post('/login', authController.login);
 router.post('/refresh', authController.refreshToken);
 router.post('/logout', authController.logout);
 router.get('/user', protect, authController.getUserProfile);
+router.post('/keycloak-sync', authController.syncKeycloakUser);
 
 module.exports = router;

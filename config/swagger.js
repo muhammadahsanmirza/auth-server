@@ -36,6 +36,7 @@ const swaggerOptions = {
   // Path to the API docs
   apis: [
     './docs/**/*.yaml',
+    './docs/users/*.yaml',  // Explicitly include users directory
     './routes/*.js'
   ]
 };

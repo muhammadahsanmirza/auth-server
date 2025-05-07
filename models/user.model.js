@@ -1,83 +1,73 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const userSchema = new mongoose.Schema(
-  {
-    Name: {
-      type: String,
-      required: [true, "Name is required"],
-      trim: true,
-      minlength: [2, "Name must be at least 2 characters long"],
-      maxlength: [50, "Name cannot exceed 50 characters"],
-      validate: {
-        validator: function (v) {
-          return !/^\d/.test(v);
-        },
-        message: (props) => "Name cannot start with a number",
+const userSchema = new mongoose.Schema({
+  Name: {
+    type: String,
+    required: [true, "Name is required"],
+    trim: true,
+    minlength: [2, "Name must be at least 2 characters long"],
+    maxlength: [50, "Name cannot exceed 50 characters"],
+    validate: {
+      validator: function (v) {
+        return !/^\d/.test(v);
       },
+      message: (props) => "Name cannot start with a number",
     },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      minlength: [8, "Password must be at least 8 characters long"],
-      maxlength: [20, "Password must be at most 20 characters long"],
-      validate: {
-        validator: function (v) {
-          return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/.test(
-            v
-          );
-        },
-        message: (props) =>
-          "Password must contain at least one uppercase letter, one lowercase letter, and one special character",
-      },
-      select: false,
-    },
-    email: {
-      type: String,
-      required: [true, "Email is required"],
-      unique: true,
-      lowercase: true,
-      trim: true,
-      match: [
-        /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
-        "Please provide a valid email address",
-      ],
-    },
-    role: {
-      type: String,
-      enum: ['admin', 'manager', 'user'],
-      default: 'user'
-    },
-    authProvider: {
-      type: String,
-      required: true,
-      enum: ["local", "auth0", "keycloak"],
-      default: "local",
-    },
-    providerId: {
-      type: String,
-      required: function () {
-        return this.authProvider !== "local";
-      },
-      unique: true,
-      sparse: true,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-      select: false,
-    },
-    loginAttempts: {
-      type: Number,
-      default: 0
-    },
-    lockUntil: {
-      type: Date
+  },
+  password: {
+    type: String,
+    required: function() {
+      // Only require password for local authentication
+      return this.authProvider === 'local' || !this.authProvider;
     }
   },
-  {
-    timestamps: true,
+  email: {
+    type: String,
+    required: [true, "Email is required"],
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [
+      /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
+      "Please provide a valid email address",
+    ],
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'manager', 'user'],
+    default: 'user'
+  },
+  authProvider: {
+    type: String,
+    required: true,
+    enum: ["local", "auth0", "keycloak"],
+    default: "local",
+  },
+  providerId: {
+    type: String,
+    required: function () {
+      return this.authProvider !== "local";
+    },
+    unique: true,
+    sparse: true,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lockUntil: {
+    type: Date
   }
+},
+{
+  timestamps: true,
+}
 );
 
 userSchema.pre("save", async function (next) {

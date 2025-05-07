@@ -293,6 +293,114 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /auth/keycloak-sync:
+    post:
+      tags:
+        - Authentication
+      summary: Synchronize Keycloak user
+      description: Synchronize user data between Keycloak and the application database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - keycloakUser
+              properties:
+                keycloakUser:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: string
+                      example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                      description: Keycloak user ID
+                    email:
+                      type: string
+                      format: email
+                      example: "john@example.com"
+                      description: User's email address
+                    username:
+                      type: string
+                      example: "johndoe"
+                      description: User's username in Keycloak
+                    firstName:
+                      type: string
+                      example: "John"
+                      description: User's first name
+                    lastName:
+                      type: string
+                      example: "Doe"
+                      description: User's last name
+                    role:
+                      type: string
+                      example: "user"
+                      description: User's role
+      responses:
+        200:
+          description: User synchronized successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User synchronized successfully"
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "60d21b4667d0d8992e610c85"
+                          Name:
+                            type: string
+                            example: "John Doe"
+                          email:
+                            type: string
+                            example: "john@example.com"
+                          role:
+                            type: string
+                            example: "user"
+                          authProvider:
+                            type: string
+                            example: "keycloak"
+                          providerId:
+                            type: string
+                            example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                          createdAt:
+                            type: string
+                            format: date-time
+                          updatedAt:
+                            type: string
+                            format: date-time
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   schemas:
     Error:

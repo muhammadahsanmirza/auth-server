@@ -1,0 +1,164 @@
+tags:
+  - name: User Management
+    description: API endpoints for user management (admin only)
+
+paths:
+  /users:
+    get:
+      tags:
+        - User Management
+      summary: Get all users
+      description: Retrieve a list of all users (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Users retrieved successfully
+                  data:
+                    type: object
+                    properties:
+                      users:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 60d21b4667d0d8992e610c85
+                            Name:
+                              type: string
+                              example: John Doe
+                            email:
+                              type: string
+                              example: john@example.com
+                            role:
+                              type: string
+                              example: user
+                            authProvider:
+                              type: string
+                              example: local
+                            createdAt:
+                              type: string
+                              format: date-time
+                            updatedAt:
+                              type: string
+                              format: date-time
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Forbidden - User is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/role:
+    patch:
+      tags:
+        - User Management
+      summary: Update user role
+      description: Change a user's role (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - role
+              properties:
+                userId:
+                  type: string
+                  example: 60d21b4667d0d8992e610c85
+                  description: ID of the user to update
+                role:
+                  type: string
+                  enum: [user, manager, admin]
+                  example: manager
+                  description: New role to assign to the user
+      responses:
+        200:
+          description: User role updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User role updated successfully
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 60d21b4667d0d8992e610c85
+                          Name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: john@example.com
+                          role:
+                            type: string
+                            example: manager
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Forbidden - User is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

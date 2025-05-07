@@ -24,12 +24,9 @@ app.use(cookieParser());
 
 // Routes
 const authRoutes = require('./routes/auth.routes');
-const dashboardRoutes = require('./routes/dashboard.routes');
-
-// API Routes
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/dashboard', dashboardRoutes);
-
+const userRoutes = require('./routes/users.routes');
+app.use('/api/v1/users', userRoutes);
 // Root route
 app.get('/', (req, res) => {
   res.send('QuantrustPKI API is running');
